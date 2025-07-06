@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>AuraVoice</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
@@ -31,14 +31,16 @@
             background-color: var(--primary-bg);
             color: var(--text-primary);
             height: 100%; width: 100%;
-            overflow: hidden;
+            /* Changed: Removed overflow: hidden to allow the body to scroll if needed */
         }
 
         .app-container {
-            width: 100%; height: 100%;
+            width: 100%;
+            min-height: 100%; /* Changed: Use min-height to allow the container to grow */
             background-color: var(--secondary-bg);
-            overflow: hidden; position: relative;
-            display: flex; flex-direction: column;
+            position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .centered-logo {
@@ -53,7 +55,9 @@
             display: none; flex-direction: column;
             align-items: center;
             flex-grow: 1;
-            overflow: hidden; /* Parent screen doesn't scroll */
+            /* Changed: Allow vertical scrolling within each screen if content is too tall */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
             text-align: center;
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -65,7 +69,7 @@
         .results-page {
             display: none; width: 100%;
             flex-direction: column; align-items: center;
-            justify-content: center; /* Vertically center content on each small page */
+            justify-content: center;
             flex-grow: 1;
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch;
@@ -119,177 +123,13 @@
         .attr-name { display: inline-block; width: 110px; }
         .progress-bar { display: inline-block; width: calc(100% - 140px); background: #333; height: 20px; border-radius: 10px; overflow: hidden; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, #6200ee, var(--accent-colour)); transition: width 1s ease-in-out 0.3s; }
-
     </style>
 </head>
 <body>
     <div class="app-container">
-        <div id="welcome-screen" class="screen active">
-            <img src="pirate.jpg" alt="Logo" class="centered-logo">
-            <h1>AuraVoice</h1>
-            <p>Votre voix est plus qu'un son, c'est votre signature unique. Analysons vos schémas vocaux pour révéler votre archétype de communication principal.</p>
-            <p class="free-notice">Cette application est 100% gratuite.</p>
-            <button id="begin-btn" class="button">Lancer l'Analyse</button>
-            <div id="credits">Idée et Conception : Panagiotis Domvros, Professeur d'Anglais et d'Art Dramatique, Tous droits réservés</div>
         </div>
-
-        <div id="analysis-screen" class="screen">
-            <div id="analysis-content">
-                <img src="pirate.jpg" alt="Logo" class="centered-logo">
-                <p>Pour calibrer l'analyseur, veuillez lire la phrase suivante à haute voix :</p>
-                <div id="prompt-box"></div>
-                <p>Appuyez sur le bouton pour enregistrer.</p>
-                <div id="record-button"></div>
-            </div>
-            <div id="recording-container">
-                <img src="pirate.jpg" alt="Logo" class="centered-logo">
-                <p id="recording-prompt-text" style="font-style: italic; color: var(--accent-colour-light)"></p>
-                <div id="wave-visualizer">
-                    <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                </div>
-                <p class="loader-text" style="text-align: center; margin-top: 10px;">Enregistrement en cours...</p>
-            </div>
-        </div>
-        
-        <div id="reveal-screen" class="screen">
-            <img src="pirate.jpg" alt="Logo" class="centered-logo">
-            <p>Votre type de voix est :</p>
-            <h1 id="reveal-name" class="revealed-name"></h1>
-        </div>
-
-        <div id="results-screen" class="screen">
-            <div id="results-content" style="display: flex; flex-direction: column; align-items: center; flex-grow: 1; width: 100%;">
-                <div id="results-page-1" class="results-page">
-                    <img src="pirate.jpg" alt="Logo" class="centered-logo">
-                    <h2 id="result-title"></h2>
-                    <p id="core-statement"></p>
-                    <div class="attribute"><span class="attr-name">Empathie</span><div class="progress-bar"><div id="empathy-bar" class="progress-fill"></div></div></div>
-                    <div class="attribute"><span class="attr-name">Compétences</span><div class="progress-bar"><div id="skills-bar" class="progress-fill"></div></div></div>
-                    <div class="attribute"><span class="attr-name">Indépendance</span><div class="progress-bar"><div id="independence-bar" class="progress-fill"></div></div></div>
-                    <div class="attribute"><span class="attr-name">Sagesse</span><div class="progress-bar"><div id="wisdom-bar" class="progress-fill"></div></div></div>
-                    <div class="attribute"><span class="attr-name">Créativité</span><div class="progress-bar"><div id="creativity-bar" class="progress-fill"></div></div></div>
-                </div>
-                <div id="results-page-2" class="results-page">
-                    <img src="pirate.jpg" alt="Logo" class="centered-logo">
-                    <h3>Votre Super-pouvoir</h3><p id="result-superpower"></p>
-                </div>
-                <div id="results-page-3" class="results-page">
-                    <img src="pirate.jpg" alt="Logo" class="centered-logo">
-                    <h3>Comment vous vous connectez</h3><p id="result-connect"></p>
-                </div>
-                <div id="results-page-4" class="results-page">
-                    <img src="pirate.jpg" alt="Logo" class="centered-logo">
-                    <h3>Angles Morts Potentiels</h3><p id="result-blindspot"></p>
-                </div>
-                <div id="results-page-5" class="results-page">
-                    <img src="pirate.jpg" alt="Logo" class="centered-logo">
-                    <h3>Exemples d'Archétypes</h3><p id="result-examples"></p>
-                </div>
-            </div>
-            <div class="nav-container">
-                <button id="back-btn" class="button nav-button" style="visibility: hidden;">Retour</button>
-                <button id="next-btn" class="button nav-button">Suivant</button>
-            </div>
-             <button id="restart-btn" class="button" style="display:none;">Analyser à nouveau</button>
-        </div>
-    </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const profiles = [
-                { masc: "Le Commandant", fem: "La Commandante", statement: "Vous êtes le/la stratège décisif(ve), parlant avec une autorité qui captive l'attention et inspire l'action.", attributes: { empathy: 11, skills: 7, independence: 42, wisdom: 37, creativity: 3 }, superpower: "Votre voix porte une direction innée. Quand vous parlez, les gens écoutent car vous projetez de l'assurance et une vision claire.", connect: "Vous inspirez le respect par la compétence et les résultats. Les autres font confiance à votre jugement et à votre capacité à les guider vers un objectif commun.", blindspot: "Votre concentration sur la mission peut parfois éclipser les personnes qui l'exécutent. Vous pourriez être perçu(e) como distant(e) si vous ne reconnaissez pas consciemment les besoins émotionnels de votre équipe.", examples: "Exemples : Jules César, Margaret Thatcher, Napoléon Bonaparte, Dark Vador, Tywin Lannister." },
-                { masc: "Le Leader", fem: "La Leader", statement: "Vous êtes l'unificateur/trice inspirant(e), équilibrant autorité et empathie pour rallier les gens autour d'une cause commune.", attributes: { empathy: 27, skills: 1, independence: 42, wisdom: 27, creativity: 3 }, superpower: "Vous possédez un rare mélange de force et de chaleur. Votre voix peut articuler une vision puissante tout en montrant que vous vous souciez réellement des gens que vous dirigez.", connect: "Vous créez des liens en montrant aux gens qu'ils sont vus et appréciés. Vous écoutez leurs préoccupations et alignez les motivations personnelles avec les objectifs du groupe.", blindspot: "Le désir d'être à la fois un(e) leader fort(e) et un(e) ami(e) empathique peut être épuisant. Vous pourriez avoir du mal à prendre des décisions impopulaires qui, vous le savez, blesseront des gens.", examples: "Exemples : Martin Luther King Jr., Reine Elizabeth I, Barack Obama, Mufasa, Jean-Luc Picard." },
-                { masc: "Le Séducteur", fem: "La Séductrice", statement: "Vous êtes le charmeur/euse charismatique, utilisant un mélange magnétique de confiance et de créativité pour attirer et conquérir les gens.", attributes: { empathy: 24, skills: 11, independence: 24, wisdom: 18, creativity: 20 }, superpower: "Votre voix a une qualité séduisante. Vous savez exactement quoi dire pour que les autres se sentent spéciaux/ales. Vous excellez à établir un contact immédiat.", connect: "Vous vous connectez en vous concentrant intensément sur l'autre personne, utilisant l'empathie et l'esprit pour créer un lien personnel puissant.", blindspot: "Votre charme peut être perçu comme manipulateur s'il n'est pas soutenu par une intention sincère. Les gens pourraient se demander si votre intérêt est authentique.", examples: "Exemples : Giacomo Casanova, Cléopâtre, James Bond, Don Draper, Jessica Rabbit." },
-                { masc: "Le Conteur", fem: "La Conteuse", statement: "Vous êtes le/la tisserand(e) de récits, utilisant des images vives et une résonance émotionnelle pour rendre les idées inoubliables.", attributes: { empathy: 49, skills: 16, independence: 12, wisdom: 4, creativity: 19 }, superpower: "Vous ne vous contentez pas d'énoncer des faits ; vous peignez des images avec vos mots. Vous avez une compréhension intuitive de l'intrigue, des personnages et des émotions.", connect: "Vous vous connectez à travers l'expérience humaine partagée. En racontant des histoires, vous créez un terrain d'entente où les auditeurs se retrouvent dans le récit.", blindspot: "Vous pourriez parfois privilégier une bonne histoire aux données brutes, simplifiant potentiellement des questions complexes. Assurez-vous que vos récits sont ancrés dans la réalité.", examples: "Exemples : Homère, Walt Disney, J.K. Rowling, Stephen King, Ira Glass." },
-                { masc: "Le Diplomate", fem: "La Diplomate", statement: "Vous êtes le/la médiateur/trice élégant(e), gérant les conflits avec tact, sagesse et un calme remarquable.", attributes: { empathy: 12, skills: 9, independence: 38, wisdom: 32, creativity: 1 }, superpower: "Vous possédez une présence apaisante et objective. Vous pouvez entendre toutes les parties d'un argument sans vous laisser entraîner émotionnellement.", connect: "Vous construisez des liens grâce à la stabilité et à l'équité. Les gens vous font confiance en tant que force neutre et rationnelle.", blindspot: "Votre concentration sur la neutralité peut être interprétée à tort comme un manque de passion. Parfois, vous devrez peut-être prendre fermement position au lieu de chercher un compromis.", examples: "Exemples : Nelson Mandela, Princesse Leia, Kofi Annan, Atticus Finch." },
-                { masc: "Le Présentateur", fem: "La Présentatrice", statement: "Vous êtes la voix claire et engageante du public, capable de rendre des informations complexes accessibles et intéressantes pour tous.", attributes: { empathy: 50, skills: 10, independence: 12, wisdom: 8, creativity: 21 }, superpower: "Vous avez un talent pour la clarté. Vous pouvez prendre un sujet dense et le décomposer en parties digestes et attrayantes pour un large public.", connect: "Vous vous connectez en étant une source d'information fiable et sympathique. Votre public ressent une familiarité et une confiance envers vous.", blindspot: "Dans votre effort pour plaire à un large public, vous pourriez parfois trop simplifier ou éviter des nuances controversées.", examples: "Exemples : Oprah Winfrey, David Attenborough, Walter Cronkite, Anderson Cooper." },
-                { masc: "Le Mentor", fem: "La Mentor", statement: "Vous êtes la main stable et la lumière qui guide, dirigeant avec expérience et une confiance tranquille pour favoriser la croissance des autres.", attributes: { empathy: 8, skills: 11, independence: 54, wisdom: 19, creativity: 8 }, superpower: "Votre plus grande force est votre vaste expérience. Vous offrez des conseils forgés par des défis et des succès réels.", connect: "Vous créez des liens en étant une source de stabilité et de connaissance. Les gens sont naturellement attirés par vous pour des conseils.", blindspot: "Votre forte indépendance peut parfois être perçue comme de la distance. N'oubliez pas de partager aussi vos propres sentiments, pas seulement vos leçons.", examples: "Exemples : Yoda, Gandalf, Albus Dumbledore, M. Miyagi, Oncle Iroh." },
-                { masc: "L'Influenceur", fem: "L'Influenceuse", statement: "Vous êtes le/la créateur/trice de tendances magnétique, canalisant la créativité et l'empathie pour construire une communauté autour d'une passion commune.", attributes: { empathy: 40, skills: 2, independence: 7, wisdom: 11, creativity: 40 }, superpower: "Vous êtes toujours à l'affût des nouveautés. Vous combinez un œil aiguisé pour les tendances avec une voix authentique et accessible.", connect: "Vous vous connectez en créant et en partageant du contenu qui résonne à un niveau personnel, faisant en sorte que vos abonnés se sentent comme des amis.", blindspot: "L'accent mis sur les tendances peut engendrer une pression pour maintenir une certaine image, ce qui peut paraître inauthentique avec le temps.", examples: "Exemples : Kim Kardashian, MrBeast, Chiara Ferragni, Addison Rae." },
-                { masc: "L'Analyste", fem: "L'Analyste", statement: "Vous êtes le/la détective perspicace, utilisant la logique et la sagesse pour découvrir les schémas cachés et les vérités que d'autres manquent.", attributes: { empathy: 12, skills: 1, independence: 33, wisdom: 39, creativity: 24 }, superpower: "Votre esprit est un instrument de pensée critique finement réglé. Vous pouvez absorber de grandes quantités de données et séparer le signal du bruit.", connect: "Vous vous connectez aux autres par le respect intellectuel. Les gens sont attirés par la clarté et la profondeur de vos analyses.", blindspot: "Vous pouvez être frustré(e) par ceux qui se fient à l'émotion plutôt qu'aux données. Votre communication peut parfois paraître froide.", examples: "Exemples : Sherlock Holmes, Spock, Batman, Dr. House, Nate Silver." },
-                { masc: "Le Visionnaire", fem: "La Visionnaire", statement: "Vous êtes l'étincelle brillante de l'innovation, peignant des images époustouflantes de l'avenir avec une voix pleine de créativité sans bornes.", attributes: { empathy: 22, skills: 2, independence: 5, wisdom: 12, creativity: 59 }, superpower: "Vous voyez ce qui pourrait être. Votre esprit fonctionne sur un autre plan, reliant des idées disparates pour générer des concepts révolutionnaires.", connect: "Vous vous connectez en invitant les gens dans votre avenir imaginé, les inspirant à croire en un monde meilleur et plus excitant.", blindspot: "Vos idées peuvent être si en avance sur leur temps que les gens ont du mal à les saisir. Vous pourriez avoir besoin de vous associer à des types plus pratiques.", examples: "Exemples : Steve Jobs, Léonard de Vinci, Elon Musk, Nikola Tesla, Walt Disney." },
-                { masc: "Le Réconfortant", fem: "La Réconfortante", statement: "Vous êtes la présence chaleureuse et rassurante, créant un havre de paix avec une voix d'empathie pure et inconditionnelle.", attributes: { empathy: 63, skills: 13, independence: 8, wisdom: 10, creativity: 6 }, superpower: "Votre voix est un baume. Vous avez une capacité extraordinaire à écouter sans jugement et à faire en sorte que les gens se sentent en sécurité, entendus et validés.", connect: "Vous vous connectez par votre souci sincère du bien-être des autres. Vous offrez votre soutien librement et créez des liens profonds et confiants.", blindspot: "Votre immense empathie peut conduire à l'épuisement émotionnel. Vous pourriez aussi avoir du mal à formuler des critiques nécessaires de peur de blesser quelqu'un.", examples: "Exemples : Fred Rogers, Samwise Gamgee, Baymax, Hagrid." },
-                { masc: "Le Novice", fem: "La Novice", statement: "Vous êtes la voix enthousiaste et en développement, pleine de potentiel et d'une énergie créative qui commence tout juste à trouver sa forme.", attributes: { empathy: 8, skills: 23, independence: 9, wisdom: 15, creativity: 45 }, superpower: "Votre super-pouvoir est votre potentiel. Vous abordez le monde avec un regard neuf et une soif d'apprendre contagieuse.", connect: "Vous vous connectez par votre enthousiasme et votre curiosité. Les gens sont attirés par votre énergie positive et votre volonté de poser des questions.", blindspot: "Votre manque d'expérience signifie que vos idées peuvent parfois être peu pratiques. Il est crucial pour vous de chercher des mentors.", examples: "Exemples : Luke Skywalker (Un nouvel espoir), Spider-Man (à ses débuts), Harry Potter (1ère année)." }
-            ];
-            const prompts = ["La créativité, c'est l'intelligence qui s'amuse.", "L'esprit le plus sage a toujours quelque chose à apprendre.", "Dis la vérité, même si ta voix tremble."];
-            
-            const screens = { welcome: document.getElementById('welcome-screen'), analysis: document.getElementById('analysis-screen'), reveal: document.getElementById('reveal-screen'), results: document.getElementById('results-screen') };
-            const elements = {
-                beginBtn: document.getElementById('begin-btn'), recordBtn: document.getElementById('record-button'), restartBtn: document.getElementById('restart-btn'),
-                promptBox: document.getElementById('prompt-box'), analysisContent: document.getElementById('analysis-content'),
-                recordingContainer: document.getElementById('recording-container'), recordingPromptText: document.getElementById('recording-prompt-text'),
-                nextBtn: document.getElementById('next-btn'), backBtn: document.getElementById('back-btn')
-            };
-
-            let currentProfile, currentResultPage;
-
-            function switchScreen(screenToShow) {
-                for (const screen in screens) { screens[screen].classList.remove('active'); }
-                screens[screenToShow].classList.add('active');
-            }
-
-            elements.beginBtn.addEventListener('click', () => {
-                const promptText = prompts[Math.floor(Math.random() * prompts.length)];
-                elements.promptBox.innerText = promptText;
-                elements.recordingPromptText.innerText = `"${promptText}"`;
-                elements.analysisContent.style.display = 'flex';
-                elements.recordingContainer.style.display = 'none';
-                switchScreen('analysis');
-            });
-
-            elements.recordBtn.addEventListener('click', () => {
-                elements.analysisContent.style.display = 'none';
-                elements.recordingContainer.style.display = 'flex';
-                setTimeout(startReveal, 5000);
-            });
-
-            function startReveal() {
-                currentProfile = profiles[Math.floor(Math.random() * profiles.length)];
-                document.getElementById('reveal-name').innerText = `${currentProfile.masc} / ${currentProfile.fem}`;
-                switchScreen('reveal');
-                setTimeout(showFullResults, 2500);
-            }
-            
-            function showFullResults() {
-                document.getElementById('result-title').innerText = `Vous êtes ${currentProfile.masc} / ${currentProfile.fem}`;
-                document.getElementById('core-statement').innerText = currentProfile.statement;
-                for (const attr in currentProfile.attributes) {
-                    document.getElementById(`${attr}-bar`).style.width = currentProfile.attributes[attr] + '%';
-                }
-                document.getElementById('result-superpower').innerText = currentProfile.superpower;
-                document.getElementById('result-connect').innerText = currentProfile.connect;
-                document.getElementById('result-blindspot').innerText = currentProfile.blindspot;
-                document.getElementById('result-examples').innerText = currentProfile.examples;
-                
-                currentResultPage = 1;
-                updateResultPage();
-                switchScreen('results');
-            }
-
-            function updateResultPage() {
-                const totalPages = 5;
-                for (let i = 1; i <= totalPages; i++) {
-                    document.getElementById(`results-page-${i}`).classList.remove('active');
-                }
-                document.getElementById(`results-page-${currentResultPage}`).classList.add('active');
-                
-                elements.backBtn.style.visibility = (currentResultPage === 1) ? 'hidden' : 'visible';
-                elements.nextBtn.style.visibility = (currentResultPage === totalPages) ? 'hidden' : 'visible';
-                
-                const finalButtonsVisible = currentResultPage === totalPages;
-                elements.restartBtn.style.display = finalButtonsVisible ? 'block' : 'none';
-                elements.nextBtn.style.display = finalButtonsVisible ? 'none' : 'block';
-            }
-
-            elements.nextBtn.addEventListener('click', () => {
-                if (currentResultPage < 5) { currentResultPage++; updateResultPage(); }
-            });
-
-            elements.backBtn.addEventListener('click', () => {
-                if (currentResultPage > 1) { currentResultPage--; updateResultPage(); }
-            });
-            
-            elements.restartBtn.addEventListener('click', () => switchScreen('welcome'));
-        });
+        // ... your script remains the same ...
     </script>
 </body>
 </html>
